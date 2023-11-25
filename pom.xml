@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.fmi</groupId>
-	<artifactId>javaweb</artifactId>
+	<artifactId>SpringWeb</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>javaweb</name>
 	<description>Project for Web Dev with Spring</description>
