@@ -1,0 +1,8 @@
+#!/bin/bash
+
+export MYSQL_ROOT_PASSWORD=ciscosecpa55
+export MYSQL_USER=admin
+export MYSQL_PASSWORD=ciscoenapa55
+export MYSQL_DATABASE=devdb
+export DATABASE_URL=jdbc:mysql://localhost:3306/devdb
+export JWT_SECRET=dG9wc2VjcmV0cGFzc3dvcmRyZXF1aXJlZHdpdGhoczI1Nmlzc29zZWN1cmVhbmRzb3Bvd2VyZnVsZm9ydGhpc2tpbmRvZnByb2plY3QhQCM0UVdFciFAIzRRV0Vy

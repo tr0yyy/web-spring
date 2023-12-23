@@ -1,22 +1,16 @@
 package com.fmi.springweb.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-@Entity
+@Entity(name="orders")
 @Getter
 @Setter
 public class OrderEntity {
 
     @Id
-    private long orderId;
-    @ManyToOne
-    @JoinColumn(name = "username")
-    private UserEntity username;
-
+    @GeneratedValue
+    private Long orderId;
     private long fundsAdded;
 }
