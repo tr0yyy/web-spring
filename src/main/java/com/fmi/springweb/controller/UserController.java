@@ -1,6 +1,7 @@
 package com.fmi.springweb.controller;
 
 import com.fmi.springweb.dto.ResponseDto;
+import com.fmi.springweb.dto.UpdateAccountDto;
 import com.fmi.springweb.dto.UserDto;
 import com.fmi.springweb.exceptions.AuthenticationFailedException;
 import com.fmi.springweb.exceptions.RegistrationFailedException;
@@ -37,6 +38,18 @@ public class UserController {
         try {
             String bearerToken = this.userService.login(model);
             response = new ResponseDto(true, bearerToken);
+        } catch (AuthenticationFailedException exception) {
+            response = new ResponseDto(false, exception.getMessage());
+        }
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/core/account/update")
+    public ResponseEntity<ResponseDto> updateAccount(@RequestBody UpdateAccountDto model) {
+        ResponseDto response;
+        try {
+            this.userService.updateAccountDetails(model);
+            response = new ResponseDto(true, "Change successful");
         } catch (AuthenticationFailedException exception) {
             response = new ResponseDto(false, exception.getMessage());
         }

@@ -2,6 +2,7 @@ package com.fmi.springweb.service;
 
 import com.fmi.springweb.component.JwtTokenUtil;
 import com.fmi.springweb.constants.Role;
+import com.fmi.springweb.dto.UpdateAccountDto;
 import com.fmi.springweb.dto.UserDto;
 import com.fmi.springweb.exceptions.AuthenticationFailedException;
 import com.fmi.springweb.exceptions.RegistrationFailedException;
@@ -38,7 +39,6 @@ public class UserService {
         return passwordEncoder.matches(specifiedPassword, user.getPassword());
     }
 
-    @Transactional
     public void register(UserDto userDto) throws RegistrationFailedException {
         Optional<UserEntity> existingUsername = userRepository.findByUsername(userDto.username);
 
@@ -85,6 +85,37 @@ public class UserService {
        user.setFunds(user.getFunds() + order.getFundsAdded());
        user.setLastRecordUpdate(new Date());
        userRepository.save(user);
+    }
+
+    public void updateAccountDetails(UpdateAccountDto updateAccountDto) throws AuthenticationFailedException {
+        Optional<UserEntity> existingUser = userRepository.findByUsername(updateAccountDto.existingUsername);
+
+        if (existingUser.isEmpty()) {
+            throw new AuthenticationFailedException("Username provided does not exist");
+        }
+
+        UserEntity foundUser = existingUser.get();
+
+        logger.info("Updating account " + foundUser.getUsername());
+
+        if (updateAccountDto.newUsername != null) {
+            Optional<UserEntity> existingUserWithNewUsername = userRepository.findByUsername(updateAccountDto.newUsername);
+
+            if (existingUserWithNewUsername.isPresent()) {
+                throw new AuthenticationFailedException("Username already registered");
+            }
+
+            logger.info("Updating username to " + updateAccountDto.newUsername);
+            foundUser.setUsername(updateAccountDto.newUsername);
+        }
+
+        if (updateAccountDto.newPassword != null) {
+            logger.info("Updating password");
+            foundUser.setPassword(passwordEncoder.encode(updateAccountDto.newPassword));
+        }
+
+        userRepository.save(foundUser);
+        logger.info("Changes saved");
     }
 
 }

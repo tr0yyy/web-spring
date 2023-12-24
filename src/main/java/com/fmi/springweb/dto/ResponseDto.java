@@ -2,10 +2,10 @@ package com.fmi.springweb.dto;
 
 public class ResponseDto {
     public boolean success;
-    public String message;
+    public Object result;
 
-    public ResponseDto (boolean success, String message) {
+    public ResponseDto (boolean success, Object result) {
         this.success = success;
-        this.message = message;
+        this.result = result;
     }
 }
