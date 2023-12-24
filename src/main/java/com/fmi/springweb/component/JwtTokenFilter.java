@@ -2,7 +2,6 @@ package com.fmi.springweb.component;
 
 import com.fmi.springweb.model.UserEntity;
 import com.fmi.springweb.repository.UserRepository;
-import com.fmi.springweb.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

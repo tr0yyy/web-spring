@@ -5,12 +5,8 @@ import com.fmi.springweb.exceptions.OrderFailedException;
 import com.fmi.springweb.model.OrderEntity;
 import com.fmi.springweb.model.UserEntity;
 import com.fmi.springweb.repository.OrderRepository;
-import com.fmi.springweb.repository.UserRepository;
 import org.apache.tomcat.util.codec.binary.Base64;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.stereotype.Service;
-
-import java.util.Arrays;
 
 @Service
 public class OrderService {
