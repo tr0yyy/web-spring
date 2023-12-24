@@ -24,6 +24,7 @@ services:
       DATABASE_URL: jdbc:mysql://mysql:3306/devdb
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
     volumes:
       - ./src:/app/src
     ports:

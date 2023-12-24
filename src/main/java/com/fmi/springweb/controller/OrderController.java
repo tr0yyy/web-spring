@@ -50,11 +50,13 @@ public class OrderController {
         if (webSpringPayment.isEmpty()) {
             return ResponseEntity.badRequest().body(new ResponseDto(false, null));
         }
+        ResponseDto response;
         try {
             orderService.completeOrder(webSpringPayment.get().getValue());
-            return ResponseEntity.ok(new ResponseDto(true, "Funds added successfully"));
+            response = new ResponseDto(true, "Funds added successfully");
         } catch (OrderFailedException orderFailedException) {
-            return ResponseEntity.status(HttpStatusCode.valueOf(502)).body(new ResponseDto(false, orderFailedException.getMessage()));
+            response = new ResponseDto(false, orderFailedException.getMessage());
         }
+        return ResponseEntity.ok(response);
     }
 }
