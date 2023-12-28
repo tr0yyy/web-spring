@@ -1,5 +1,6 @@
 package com.fmi.springweb.controller;
 
+import com.fmi.springweb.component.RequestHandler;
 import com.fmi.springweb.dto.OrderDto;
 import com.fmi.springweb.dto.ResponseDto;
 import com.fmi.springweb.exceptions.OrderFailedException;
@@ -11,7 +12,6 @@ import org.apache.tomcat.util.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -45,18 +45,14 @@ public class OrderController {
 
     @PostMapping("/core/funds/complete")
     public ResponseEntity<ResponseDto> completeFunds(HttpServletRequest httpServletRequest) {
-        logger.info("Completing payment...");
-        Optional<Cookie> webSpringPayment = Arrays.stream(httpServletRequest.getCookies()).filter(cookie -> cookie.getName().equals("X-WebSpring-Payment")).findFirst();
-        if (webSpringPayment.isEmpty()) {
-            return ResponseEntity.badRequest().body(new ResponseDto(false, null));
-        }
-        ResponseDto response;
-        try {
+        return RequestHandler.handleRequest(() -> {
+            logger.info("Completing payment...");
+            Optional<Cookie> webSpringPayment = Arrays.stream(httpServletRequest.getCookies()).filter(cookie -> cookie.getName().equals("X-WebSpring-Payment")).findFirst();
+            if (webSpringPayment.isEmpty()) {
+                return ResponseEntity.badRequest().body(new ResponseDto(false, null));
+            }
             orderService.completeOrder(webSpringPayment.get().getValue());
-            response = new ResponseDto(true, "Funds added successfully");
-        } catch (OrderFailedException orderFailedException) {
-            response = new ResponseDto(false, orderFailedException.getMessage());
-        }
-        return ResponseEntity.ok(response);
+            return ResponseEntity.ok(new ResponseDto(true, "Funds added successfully"));
+        }, OrderFailedException.class);
     }
 }

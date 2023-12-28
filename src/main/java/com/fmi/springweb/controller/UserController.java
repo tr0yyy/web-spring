@@ -1,12 +1,12 @@
 package com.fmi.springweb.controller;
 
+import com.fmi.springweb.component.RequestHandler;
 import com.fmi.springweb.dto.ResponseDto;
 import com.fmi.springweb.dto.UpdateAccountDto;
 import com.fmi.springweb.dto.UserDto;
 import com.fmi.springweb.exceptions.AuthenticationFailedException;
 import com.fmi.springweb.exceptions.RegistrationFailedException;
 import com.fmi.springweb.service.UserService;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,37 +22,25 @@ public class UserController {
 
     @PostMapping("/auth/register")
     public ResponseEntity<ResponseDto> registerAccount(@RequestBody UserDto model) {
-        ResponseDto response;
-        try {
+        return RequestHandler.handleRequest(() -> {
             this.userService.register(model);
-            response = new ResponseDto(true, null);
-        } catch (RegistrationFailedException exception) {
-            response = new ResponseDto(false, exception.getMessage());
-        }
-        return ResponseEntity.ok(response);
+            return ResponseEntity.ok(new ResponseDto(true, null));
+        }, RegistrationFailedException.class);
     }
 
     @PostMapping("/auth/login")
     public ResponseEntity<ResponseDto> loginAccount(@RequestBody UserDto model) {
-        ResponseDto response;
-        try {
+        return RequestHandler.handleRequest(() -> {
             String bearerToken = this.userService.login(model);
-            response = new ResponseDto(true, bearerToken);
-        } catch (AuthenticationFailedException exception) {
-            response = new ResponseDto(false, exception.getMessage());
-        }
-        return ResponseEntity.ok(response);
+            return ResponseEntity.ok(new ResponseDto(true, bearerToken));
+        }, AuthenticationFailedException.class);
     }
 
     @PostMapping("/core/account/update")
     public ResponseEntity<ResponseDto> updateAccount(@RequestBody UpdateAccountDto model) {
-        ResponseDto response;
-        try {
+        return RequestHandler.handleRequest(() -> {
             this.userService.updateAccountDetails(model);
-            response = new ResponseDto(true, "Change successful");
-        } catch (AuthenticationFailedException exception) {
-            response = new ResponseDto(false, exception.getMessage());
-        }
-        return ResponseEntity.ok(response);
+            return ResponseEntity.ok(new ResponseDto(true, "Change successful"));
+        }, AuthenticationFailedException.class);
     }
 }
