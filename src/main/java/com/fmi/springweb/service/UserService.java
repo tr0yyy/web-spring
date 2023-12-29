@@ -2,21 +2,26 @@ package com.fmi.springweb.service;
 
 import com.fmi.springweb.component.JwtTokenUtil;
 import com.fmi.springweb.constants.Role;
+import com.fmi.springweb.dto.CarDto;
 import com.fmi.springweb.dto.UpdateAccountDto;
+import com.fmi.springweb.dto.UserCarsDetailsDto;
 import com.fmi.springweb.dto.UserDto;
 import com.fmi.springweb.exceptions.AuthenticationFailedException;
 import com.fmi.springweb.exceptions.RegistrationFailedException;
+import com.fmi.springweb.model.CarEntity;
 import com.fmi.springweb.model.OrderEntity;
 import com.fmi.springweb.model.UserEntity;
 import com.fmi.springweb.repository.UserRepository;
-import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -26,13 +31,16 @@ public class UserService {
     private final JwtTokenUtil jwtTokenUtil;
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
+    private final CarService carService;
 
     public UserService(UserRepository userRepository,
                        PasswordEncoder passwordEncoder,
-                       JwtTokenUtil jwtTokenUtil) {
+                       JwtTokenUtil jwtTokenUtil,
+                       CarService carService) {
         this.userRepository = userRepository;
         this.jwtTokenUtil = jwtTokenUtil;
         this.passwordEncoder = passwordEncoder;
+        this.carService = carService;
     }
 
     public boolean validatePassword(String specifiedPassword, UserEntity user) {
@@ -88,7 +96,8 @@ public class UserService {
     }
 
     public void updateAccountDetails(UpdateAccountDto updateAccountDto) throws AuthenticationFailedException {
-        Optional<UserEntity> existingUser = userRepository.findByUsername(updateAccountDto.existingUsername);
+        Optional<UserEntity> existingUser =
+                userRepository.findByUsername(updateAccountDto.existingUsername);
 
         if (existingUser.isEmpty()) {
             throw new AuthenticationFailedException("Username provided does not exist");
@@ -99,7 +108,8 @@ public class UserService {
         logger.info("Updating account " + foundUser.getUsername());
 
         if (updateAccountDto.newUsername != null) {
-            Optional<UserEntity> existingUserWithNewUsername = userRepository.findByUsername(updateAccountDto.newUsername);
+            Optional<UserEntity> existingUserWithNewUsername =
+                    userRepository.findByUsername(updateAccountDto.newUsername);
 
             if (existingUserWithNewUsername.isPresent()) {
                 throw new AuthenticationFailedException("Username already registered");
@@ -118,4 +128,28 @@ public class UserService {
         logger.info("Changes saved");
     }
 
+    public UserCarsDetailsDto getUserProfile(String username) throws AuthenticationFailedException {
+        UserEntity existingUser = userRepository.findByUsername(username).orElse(null);
+
+        if (existingUser == null) {
+            throw new AuthenticationFailedException("Username provided does not exist");
+        }
+
+        logger.info("Computing user profile for " + username);
+
+        UserCarsDetailsDto userCarsDetails = new UserCarsDetailsDto();
+        userCarsDetails.username = username;
+        userCarsDetails.email = existingUser.getEmail();
+        userCarsDetails.funds = existingUser.getFunds();
+
+        List<CarEntity> userCars = carService.computeCarsForUser(existingUser);
+
+        userCarsDetails.cars = userCars != null ? userCars
+                .stream()
+                .map(carEntity ->
+                        new CarDto(carEntity.getCarId(), carEntity.getCarModel()))
+                .collect(Collectors.toList()) : new ArrayList<>();
+
+        return userCarsDetails;
+    }
 }
