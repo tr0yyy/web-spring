@@ -25,6 +25,12 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+    private static final String[] AUTH_WHITELIST = {
+            "/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**", "/swagger-resources/**", "/configuration/ui", "/configuration/security",
+            "/auth/**",
+            "/api/**"
+    };
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -33,8 +39,7 @@ public class SecurityConfig {
                 );
 
         http.authorizeHttpRequests((authorize) -> authorize
-                .requestMatchers("/auth/**").permitAll()
-                .requestMatchers("/api/**").permitAll()
+                .requestMatchers(AUTH_WHITELIST).permitAll()
                 .requestMatchers("/core/**").hasAuthority(Role.USER)
                 .requestMatchers("/admin/**").hasAuthority(Role.ADMIN));
 

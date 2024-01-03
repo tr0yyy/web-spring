@@ -6,5 +6,5 @@ public class UserCarsDetailsDto {
     public String username;
     public String email;
     public Float funds;
-    public List<CarDto> cars;
+    public List<CarSummaryDto> cars;
 }

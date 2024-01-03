@@ -1,11 +1,10 @@
 package com.fmi.springweb.dto;
 
 public class CarDto {
-    public Long carId;
+    public String carModel;
     public String carBrand;
-
-    public CarDto(Long carId, String carBrand) {
-        this.carId = carId;
-        this.carBrand = carBrand;
-    }
+    public String country;
+    public int manufactureYear;
+    public int kilometers;
+    public float initialPrice;
 }

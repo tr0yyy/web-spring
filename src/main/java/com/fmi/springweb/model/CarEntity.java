@@ -18,4 +18,14 @@ public class CarEntity {
     private int manufactureYear;
     private int kilometers;
     private float initialPrice;
+
+    public CarEntity() {}
+
+    public CarEntity(CarBrandEntity carBrand, String carModel, int manufactureYear, int kilometers, float initialPrice) {
+        this.carBrand = carBrand;
+        this.carModel = carModel;
+        this.manufactureYear = manufactureYear;
+        this.kilometers = kilometers;
+        this.initialPrice = initialPrice;
+    }
 }

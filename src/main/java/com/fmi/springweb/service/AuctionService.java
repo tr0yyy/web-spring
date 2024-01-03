@@ -1,29 +1,61 @@
 package com.fmi.springweb.service;
 
+import com.fmi.springweb.dto.StartAuctionDto;
+import com.fmi.springweb.exceptions.InvalidAuctionException;
 import com.fmi.springweb.model.AuctionEntity;
 import com.fmi.springweb.model.BidEntity;
-import com.fmi.springweb.model.UserEntity;
+import com.fmi.springweb.model.CarEntity;
 import com.fmi.springweb.repository.AuctionRepository;
+import com.fmi.springweb.repository.CarRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.*;
 
 @Service
 public class AuctionService {
     private final AuctionRepository auctionRepository;
-    private final BidService bidService;
+    private final CarRepository carRepository;
 
-    public AuctionService(AuctionRepository auctionRepository, BidService bidService) {
+    public AuctionService(AuctionRepository auctionRepository, CarRepository carRepository) {
         this.auctionRepository = auctionRepository;
-        this.bidService = bidService;
+        this.carRepository = carRepository;
     }
 
-    public List<AuctionEntity> getAuctionsForUser(UserEntity user) {
-        List<BidEntity> bidEntities = bidService.computeWinningBidsForUser(user);
-        if (bidEntities == null || bidEntities.isEmpty()) {
-            return null;
+    public BidEntity getMaxBidFromAuction(AuctionEntity auctionEntity) {
+        return auctionEntity.getBids().stream()
+                .max(Comparator.comparingDouble(BidEntity::getBidPrice))
+                .orElse(null);
+    }
+
+    public void outbidLatestBidFromAuction(AuctionEntity auctionEntity, BidEntity bidEntity) {
+        for (BidEntity bid : auctionEntity.getBids()) {
+            if (Objects.equals(bid.getBidId(), bidEntity.getBidId())) {
+                bid.setWinningBid(false);
+                break;
+            }
+        }
+        auctionRepository.save(auctionEntity);
+    }
+
+    public void startAuctionForCar(StartAuctionDto model) throws InvalidAuctionException {
+        CarEntity carEntity = carRepository.findById(model.carId).orElse(null);
+
+        if (carEntity == null) {
+            throw new InvalidAuctionException("Invalid Car Id provided");
         }
 
-        return auctionRepository.findAuctionEntitiesByBidsIn(bidEntities).orElse(null);
+        AuctionEntity auctionEntity = new AuctionEntity();
+        auctionEntity.setStartDate(new Date());
+        auctionEntity.setEndDate(new Date(new Date().getTime() + model.days * 24 * 60 * 60 * 1000));
+        auctionEntity.setCar(carEntity);
+
+        auctionRepository.save(auctionEntity);
     }
+
+    public List<AuctionEntity> getAvailableAuctions() {
+        return auctionRepository
+                .findAuctionEntitiesByStartDateBeforeAndEndDateAfter(new Date(), new Date())
+                .orElse(new ArrayList<>());
+    }
+
 }

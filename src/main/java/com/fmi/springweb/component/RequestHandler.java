@@ -6,6 +6,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
+
 @Component
 public class RequestHandler {
     public static Logger logger = LoggerFactory.getLogger(RequestHandler.class);
@@ -14,17 +16,23 @@ public class RequestHandler {
         ResponseEntity<ResponseDto> onCallBack() throws Exception;
     }
 
-    public static ResponseEntity<ResponseDto> handleRequest(Callback callback, Class<? extends Exception> exceptionType) {
+    public static ResponseEntity<ResponseDto> handleRequest(Callback callback,
+                                                            Class<? extends Exception> exceptionType) {
         try {
             return callback.onCallBack();
         } catch (Exception e) {
-            // if exception type is expected one, we will return 200 OK with success false and specific error message
+            // if exception type is expected one,
+            // we will return 200 OK with success false and specific error message
             if (exceptionType.isInstance(e)) {
-                return ResponseEntity.ok(new ResponseDto(false, e.getMessage()));
+                return ResponseEntity.ok(
+                        new ResponseDto(false, e.getMessage()));
             }
-            // if exception type is not expected, we will return server error
+            // if exception type is not expected,
+            // we will return server error
             logger.error(e.getMessage());
-            return ResponseEntity.internalServerError().body(new ResponseDto(false, "Internal server error"));
+            logger.error(Arrays.toString(e.getStackTrace()));
+            return ResponseEntity.internalServerError().body(
+                    new ResponseDto(false, "Internal server error"));
         }
     }
 }

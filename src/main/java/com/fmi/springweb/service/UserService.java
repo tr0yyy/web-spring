@@ -2,7 +2,7 @@ package com.fmi.springweb.service;
 
 import com.fmi.springweb.component.JwtTokenUtil;
 import com.fmi.springweb.constants.Role;
-import com.fmi.springweb.dto.CarDto;
+import com.fmi.springweb.dto.CarSummaryDto;
 import com.fmi.springweb.dto.UpdateAccountDto;
 import com.fmi.springweb.dto.UserCarsDetailsDto;
 import com.fmi.springweb.dto.UserDto;
@@ -147,7 +147,7 @@ public class UserService {
         userCarsDetails.cars = userCars != null ? userCars
                 .stream()
                 .map(carEntity ->
-                        new CarDto(carEntity.getCarId(), carEntity.getCarModel()))
+                        new CarSummaryDto(carEntity.getCarId(), carEntity.getCarModel()))
                 .collect(Collectors.toList()) : new ArrayList<>();
 
         return userCarsDetails;
