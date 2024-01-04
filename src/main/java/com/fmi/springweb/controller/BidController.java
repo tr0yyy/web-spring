@@ -17,10 +17,11 @@ public class BidController {
         this.bidService = bidService;
     }
     @PostMapping("/core/bid/place")
-    public ResponseEntity<ResponseDto> placeBid(@RequestBody PlaceBidDto placeBidDto) {
-        return RequestHandler.handleRequest(() -> {
+    public ResponseEntity<ResponseDto<String>> placeBid(@RequestBody PlaceBidDto placeBidDto) {
+        return RequestHandler.handleRequest(
+                () -> {
             this.bidService.placeBid(placeBidDto.username, placeBidDto.auctionId, placeBidDto.funds);
-            return ResponseEntity.ok(new ResponseDto(true, "Bid placed successfully"));
+            return ResponseEntity.ok(new ResponseDto<>(true, "Bid placed successfully"));
         }, InvalidBidException.class);
     }
 }

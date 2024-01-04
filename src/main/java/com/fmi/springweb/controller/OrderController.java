@@ -44,15 +44,15 @@ public class OrderController {
     }
 
     @PostMapping("/core/funds/complete")
-    public ResponseEntity<ResponseDto> completeFunds(HttpServletRequest httpServletRequest) {
+    public ResponseEntity<ResponseDto<String>> completeFunds(HttpServletRequest httpServletRequest) {
         return RequestHandler.handleRequest(() -> {
             logger.info("Completing payment...");
             Optional<Cookie> webSpringPayment = Arrays.stream(httpServletRequest.getCookies()).filter(cookie -> cookie.getName().equals("X-WebSpring-Payment")).findFirst();
             if (webSpringPayment.isEmpty()) {
-                return ResponseEntity.badRequest().body(new ResponseDto(false, null));
+                return ResponseEntity.badRequest().body(new ResponseDto<>(false, null));
             }
             orderService.completeOrder(webSpringPayment.get().getValue());
-            return ResponseEntity.ok(new ResponseDto(true, "Funds added successfully"));
+            return ResponseEntity.ok(new ResponseDto<>(true, "Funds added successfully"));
         }, OrderFailedException.class);
     }
 }

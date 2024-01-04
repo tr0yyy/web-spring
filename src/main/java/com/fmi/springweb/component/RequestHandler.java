@@ -12,12 +12,12 @@ import java.util.Arrays;
 public class RequestHandler {
     public static Logger logger = LoggerFactory.getLogger(RequestHandler.class);
     @FunctionalInterface
-    public interface Callback {
-        ResponseEntity<ResponseDto> onCallBack() throws Exception;
+    public interface Callback<T> {
+        ResponseEntity<ResponseDto<T>> onCallBack() throws Exception;
     }
 
-    public static ResponseEntity<ResponseDto> handleRequest(Callback callback,
-                                                            Class<? extends Exception> exceptionType) {
+    public static <T> ResponseEntity<ResponseDto<T>> handleRequest(Callback<T> callback,
+                                                                   Class<? extends Exception> exceptionType) {
         try {
             return callback.onCallBack();
         } catch (Exception e) {
@@ -25,14 +25,14 @@ public class RequestHandler {
             // we will return 200 OK with success false and specific error message
             if (exceptionType.isInstance(e)) {
                 return ResponseEntity.ok(
-                        new ResponseDto(false, e.getMessage()));
+                        new ResponseDto<>(e.getMessage()));
             }
             // if exception type is not expected,
             // we will return server error
             logger.error(e.getMessage());
             logger.error(Arrays.toString(e.getStackTrace()));
             return ResponseEntity.internalServerError().body(
-                    new ResponseDto(false, "Internal server error"));
+                    new ResponseDto<>("Internal server error"));
         }
     }
 }

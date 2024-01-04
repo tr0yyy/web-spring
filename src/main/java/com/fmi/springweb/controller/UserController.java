@@ -20,34 +20,34 @@ public class UserController {
     }
 
     @PostMapping("/auth/register")
-    public ResponseEntity<ResponseDto> registerAccount(@RequestBody UserDto model) {
+    public ResponseEntity<ResponseDto<Object>> registerAccount(@RequestBody UserDto model) {
         return RequestHandler.handleRequest(() -> {
             this.userService.register(model);
-            return ResponseEntity.ok(new ResponseDto(true, null));
+            return ResponseEntity.ok(new ResponseDto<>(true, null));
         }, RegistrationFailedException.class);
     }
 
     @PostMapping("/auth/login")
-    public ResponseEntity<ResponseDto> loginAccount(@RequestBody UserDto model) {
+    public ResponseEntity<ResponseDto<String>> loginAccount(@RequestBody UserDto model) {
         return RequestHandler.handleRequest(() -> {
             String bearerToken = this.userService.login(model);
-            return ResponseEntity.ok(new ResponseDto(true, bearerToken));
+            return ResponseEntity.ok(new ResponseDto<>(true, bearerToken));
         }, AuthenticationFailedException.class);
     }
 
     @PostMapping("/core/account/update")
-    public ResponseEntity<ResponseDto> updateAccount(@RequestBody UpdateAccountDto model) {
+    public ResponseEntity<ResponseDto<String>> updateAccount(@RequestBody UpdateAccountDto model) {
         return RequestHandler.handleRequest(() -> {
             this.userService.updateAccountDetails(model);
-            return ResponseEntity.ok(new ResponseDto(true, "Change successful"));
+            return ResponseEntity.ok(new ResponseDto<>(true, "Change successful"));
         }, AuthenticationFailedException.class);
     }
 
     @GetMapping("/core/account/profile/{username}")
-    public ResponseEntity<ResponseDto> getUsersCars(@PathVariable("username") String username) {
+    public ResponseEntity<ResponseDto<UserCarsDetailsDto>> getUsersCars(@PathVariable("username") String username) {
         return RequestHandler.handleRequest(() -> {
             UserCarsDetailsDto userProfile = this.userService.getUserProfile(username);
-            return ResponseEntity.ok(new ResponseDto(true, userProfile));
+            return ResponseEntity.ok(new ResponseDto<>(true, userProfile));
         }, AuthenticationFailedException.class);
     }
 }

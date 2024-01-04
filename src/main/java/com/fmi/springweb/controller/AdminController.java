@@ -22,19 +22,29 @@ public class AdminController {
         this.auctionService = auctionService;
     }
 
+    /**
+     * Import list of cars. Requires admin role
+     * @param cars Array of cars
+     * @return 200 OK for successful import, 502 for Server Error
+     */
     @PostMapping("/admin/car/import")
-    public ResponseEntity<ResponseDto> importCars(@RequestBody ImportCarsDto cars) {
+    public ResponseEntity<ResponseDto<Object>> importCars(@RequestBody ImportCarsDto cars) {
         return RequestHandler.handleRequest(() -> {
             this.carService.importCarsFromList(cars);
-            return ResponseEntity.ok(new ResponseDto(true, null));
+            return ResponseEntity.ok(new ResponseDto<>(true, null));
         }, null);
     }
 
+    /**
+     * Start car auction. Requires admin role
+     * @param model Settings for auction
+     * @return 200 OK for successful import, 502 for Server Error
+     */
     @PostMapping("/admin/auction/start")
-    public ResponseEntity<ResponseDto> startAuction(@RequestBody StartAuctionDto model) {
+    public ResponseEntity<ResponseDto<Object>> startAuction(@RequestBody StartAuctionDto model) {
         return RequestHandler.handleRequest(() -> {
             this.auctionService.startAuctionForCar(model);
-            return ResponseEntity.ok(new ResponseDto(true, null));
+            return ResponseEntity.ok(new ResponseDto<>(true, null));
         }, InvalidAuctionException.class);
     }
 }
