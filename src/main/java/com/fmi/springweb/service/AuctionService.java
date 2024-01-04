@@ -1,5 +1,6 @@
 package com.fmi.springweb.service;
 
+import com.fmi.springweb.dto.AuctionDto;
 import com.fmi.springweb.dto.StartAuctionDto;
 import com.fmi.springweb.exceptions.InvalidAuctionException;
 import com.fmi.springweb.model.AuctionEntity;
@@ -10,6 +11,7 @@ import com.fmi.springweb.repository.CarRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class AuctionService {
@@ -44,6 +46,10 @@ public class AuctionService {
             throw new InvalidAuctionException("Invalid Car Id provided");
         }
 
+        if (auctionRepository.findAuctionEntitiesByCar(carEntity).isPresent()) {
+            throw new InvalidAuctionException("Car already auctioned");
+        }
+
         AuctionEntity auctionEntity = new AuctionEntity();
         auctionEntity.setStartDate(new Date());
         auctionEntity.setEndDate(new Date(new Date().getTime() + model.days * 24 * 60 * 60 * 1000));
@@ -52,10 +58,19 @@ public class AuctionService {
         auctionRepository.save(auctionEntity);
     }
 
-    public List<AuctionEntity> getAvailableAuctions() {
+    public List<AuctionDto> getAvailableAuctions() {
         return auctionRepository
                 .findAuctionEntitiesByStartDateBeforeAndEndDateAfter(new Date(), new Date())
-                .orElse(new ArrayList<>());
+                .orElse(new ArrayList<>())
+                .stream()
+                .map((auction) -> new AuctionDto(
+                        auction.getAuctionId(),
+                        auction.getCar().getCarModel(),
+                        auction.getCar().getCarBrand().getBrandName(),
+                        auction.getCar().getCarId(),
+                        auction.getStartDate(),
+                        auction.getEndDate()))
+                .collect(Collectors.toList());
     }
 
 }

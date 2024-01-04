@@ -19,4 +19,15 @@ public class BidEntity {
     private Date bidDate;
     private Float bidPrice;
     private boolean winningBid;
+
+    @Override
+    public String toString() {
+        return "BidEntity{" +
+                "bidId=" + bidId +
+                ", username=" + username +
+                ", bidDate=" + bidDate +
+                ", bidPrice=" + bidPrice +
+                ", winningBid=" + winningBid +
+                '}';
+    }
 }
