@@ -1,16 +1,21 @@
 package com.fmi.springweb.service;
 
 import com.fmi.springweb.dto.AuctionDto;
+import com.fmi.springweb.dto.BidDto;
 import com.fmi.springweb.dto.StartAuctionDto;
 import com.fmi.springweb.exceptions.InvalidAuctionException;
+import com.fmi.springweb.exceptions.InvalidBidException;
 import com.fmi.springweb.model.AuctionEntity;
 import com.fmi.springweb.model.BidEntity;
 import com.fmi.springweb.model.CarEntity;
+import com.fmi.springweb.model.UserEntity;
 import com.fmi.springweb.repository.AuctionRepository;
 import com.fmi.springweb.repository.CarRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.function.BinaryOperator;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -71,6 +76,38 @@ public class AuctionService {
                         auction.getStartDate(),
                         auction.getEndDate()))
                 .collect(Collectors.toList());
+    }
+
+    public List<BidDto> computeDetailsFromAuction(Long auctionId) throws InvalidAuctionException {
+        AuctionEntity auctionEntity = auctionRepository.findAuctionEntityByAuctionId(auctionId).orElse(null);
+
+        if (auctionEntity == null) {
+            throw new InvalidAuctionException("Missing auction from platform");
+        }
+
+        List<BidEntity> listOfBids = auctionEntity.getBids();
+
+        if (listOfBids.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        Map<UserEntity, BidEntity> highestBidByUser =
+                listOfBids.stream()
+                    .collect(Collectors.toMap(
+                            BidEntity::getUsername,
+                            Function.identity(),
+                            BinaryOperator.maxBy(
+                                    Comparator.comparing(BidEntity::getBidDate)
+                            )
+                    )
+                );
+
+        return highestBidByUser.values().stream().map(
+                (entity) -> new BidDto(entity.getBidId(),
+                        entity.getUsername().getUsername(),
+                        entity.getBidDate(),
+                        entity.getBidPrice(),
+                        entity.isWinningBid())).collect(Collectors.toList());
     }
 
 }

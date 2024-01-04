@@ -10,5 +10,6 @@ import java.util.Optional;
 
 @Repository
 public interface BidRepository extends JpaRepository<BidEntity, Long> {
+    Optional<List<BidEntity>> findBidEntitiesByUsername(UserEntity user);
     Optional<List<BidEntity>> findBidEntitiesByUsernameAndWinningBidIsTrue(UserEntity username);
 }

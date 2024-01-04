@@ -1,14 +1,12 @@
 package com.fmi.springweb.controller;
 
 import com.fmi.springweb.component.RequestHandler;
-import com.fmi.springweb.dto.BidDto;
+import com.fmi.springweb.dto.PlaceBidDto;
 import com.fmi.springweb.dto.ResponseDto;
 import com.fmi.springweb.exceptions.InvalidBidException;
 import com.fmi.springweb.service.BidService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class BidController {
@@ -19,9 +17,9 @@ public class BidController {
         this.bidService = bidService;
     }
     @PostMapping("/core/bid/place")
-    public ResponseEntity<ResponseDto> placeBid(@RequestBody BidDto bidDto) {
+    public ResponseEntity<ResponseDto> placeBid(@RequestBody PlaceBidDto placeBidDto) {
         return RequestHandler.handleRequest(() -> {
-            this.bidService.placeBid(bidDto.username, bidDto.auctionId, bidDto.funds);
+            this.bidService.placeBid(placeBidDto.username, placeBidDto.auctionId, placeBidDto.funds);
             return ResponseEntity.ok(new ResponseDto(true, "Bid placed successfully"));
         }, InvalidBidException.class);
     }
