@@ -15,4 +15,13 @@ public class CarBrandEntity {
     private Long brandId;
     private String brandName;
     private String country;
+
+    public CarBrandEntity() {
+    }
+
+    public CarBrandEntity(Long brandId, String brandName, String country) {
+        this.brandId = brandId;
+        this.brandName = brandName;
+        this.country = country;
+    }
 }

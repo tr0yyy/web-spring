@@ -5,4 +5,10 @@ public class UserDto {
     public String password;
     public String email;
 
+    public UserDto(){}
+    public UserDto(String username, String password, String email) {
+        this.username = username;
+        this.password = password;
+        this.email = email;
+    }
 }

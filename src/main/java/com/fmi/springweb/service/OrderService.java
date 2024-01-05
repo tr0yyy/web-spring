@@ -21,7 +21,12 @@ public class OrderService {
     public void completeOrder(String paymentToken) throws OrderFailedException {
         String[] paymentDecoded = new String(Base64.decodeBase64(paymentToken)).split("\\|");
         String username = paymentDecoded[0];
-        Long funds = Long.valueOf(paymentDecoded[1]);
+        Long funds;
+        try {
+            funds = Long.valueOf(paymentDecoded[1]);
+        } catch (NumberFormatException e) {
+            throw new OrderFailedException("Invalid funds provided");
+        }
 
         try {
             UserEntity user = userService.getUser(username);
