@@ -4,6 +4,7 @@ import com.fmi.springweb.component.JwtTokenFilter;
 import com.fmi.springweb.constants.Role;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -12,6 +13,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
+@Profile("Production")
 @EnableWebSecurity
 public class SecurityConfig {
     private final JwtTokenFilter jwtRequestFilter;

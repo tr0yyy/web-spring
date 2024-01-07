@@ -16,6 +16,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
+@ActiveProfiles("UnitTests")
 public class UserServiceTest {
     @Mock
     private UserRepository userRepository;
@@ -45,6 +47,7 @@ public class UserServiceTest {
     @Test
     public void testRegisterUserSuccess() throws RegistrationFailedException {
         UserDto userDto = new UserDto("newUser", "password123", "newuser@example.com");
+
         when(userRepository.findByUsername("newUser")).thenReturn(Optional.empty());
         when(passwordEncoder.encode("password123")).thenReturn("encodedPassword");
 
@@ -57,6 +60,7 @@ public class UserServiceTest {
     public void testRegisterUserAlreadyExists() {
         UserDto userDto = new UserDto("existingUser", "password123", "existinguser@example.com");
         UserEntity existingUser = new UserEntity("existingUser", "password123", "existinguser@example.com", Role.USER);
+
         when(userRepository.findByUsername("existingUser")).thenReturn(Optional.of(existingUser));
 
         assertThrows(RegistrationFailedException.class, () -> userService.register(userDto));
@@ -74,13 +78,13 @@ public class UserServiceTest {
 
         String token = userService.login(userDto);
 
-        // Add assertions here to check the token
         assertEquals("ExpectedTokenValue", token);
     }
 
     @Test
     public void testLoginUserInvalidUsername() {
         UserDto userDto = new UserDto("nonExistentUser", "password123", null);
+
         when(userRepository.findByUsername("nonExistentUser")).thenReturn(Optional.empty());
 
         assertThrows(AuthenticationFailedException.class, () -> userService.login(userDto));
@@ -103,6 +107,7 @@ public class UserServiceTest {
         UpdateAccountDto updateAccountDto = new UpdateAccountDto("existingUser", "newUsername", null);
         UserEntity existingUser = new UserEntity();
         existingUser.setUsername("existingUser");
+
         when(userRepository.findByUsername("existingUser")).thenReturn(Optional.of(existingUser));
         when(userRepository.findByUsername("newUsername")).thenReturn(Optional.empty());
 
@@ -117,6 +122,7 @@ public class UserServiceTest {
         UpdateAccountDto updateAccountDto = new UpdateAccountDto("existingUser", "newUsername", null);
         UserEntity existingUser = new UserEntity();
         existingUser.setUsername("existingUser");
+
         when(userRepository.findByUsername("existingUser")).thenReturn(Optional.of(existingUser));
         when(userRepository.findByUsername("newUsername")).thenReturn(Optional.of(new UserEntity()));
 
@@ -128,6 +134,7 @@ public class UserServiceTest {
         UpdateAccountDto updateAccountDto = new UpdateAccountDto("existingUser", null, "newPassword");
         UserEntity existingUser = new UserEntity();
         existingUser.setUsername("existingUser");
+
         when(userRepository.findByUsername("existingUser")).thenReturn(Optional.of(existingUser));
         when(passwordEncoder.encode("newPassword")).thenReturn("encodedNewPassword");
 
@@ -140,6 +147,7 @@ public class UserServiceTest {
     @Test
     public void testUpdateAccountDetailsInvalidUsername() {
         UpdateAccountDto updateAccountDto = new UpdateAccountDto("nonExistentUser", null, null);
+
         when(userRepository.findByUsername("nonExistentUser")).thenReturn(Optional.empty());
 
         assertThrows(AuthenticationFailedException.class, () -> userService.updateAccountDetails(updateAccountDto));
@@ -152,7 +160,6 @@ public class UserServiceTest {
         existingUser.setUsername(username);
         existingUser.setEmail("user@example.com");
         existingUser.setFunds(100.0F);
-
         List<CarEntity> userCars = new ArrayList<>();
         CarBrandEntity carBrand = new CarBrandEntity(1L, "Test", "Test");
         userCars.add(new CarEntity(carBrand, "Test", 2000, 2000, 2000F));
@@ -171,6 +178,7 @@ public class UserServiceTest {
     @Test
     public void testGetUserProfileInvalidUsername() {
         String username = "nonExistentUser";
+
         when(userRepository.findByUsername(username)).thenReturn(Optional.empty());
 
         assertThrows(AuthenticationFailedException.class, () -> userService.getUserProfile(username));

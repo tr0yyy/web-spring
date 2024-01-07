@@ -13,7 +13,7 @@ import java.util.Optional;
 @Repository
 public interface AuctionRepository extends JpaRepository<AuctionEntity, Long> {
     Optional<AuctionEntity> findAuctionEntityByAuctionId(Long auctionId);
-    Optional<AuctionEntity> findAuctionEntitiesByCar(CarEntity carEntity);
+    Optional<AuctionEntity> findAuctionEntityByCar(CarEntity carEntity);
     Optional<List<AuctionEntity>> findAuctionEntitiesByBidsInAndEndDateBefore(List<BidEntity> listOfBids, Date endDate);
     Optional<List<AuctionEntity>> findAuctionEntitiesByStartDateBeforeAndEndDateAfter(Date startDate, Date endDate);
 }

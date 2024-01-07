@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Optional;
 
@@ -18,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
+@ActiveProfiles("UnitTests")
 public class OrderServiceTest {
     @Mock
     private UserService userService;
@@ -40,6 +42,7 @@ public class OrderServiceTest {
         String paymentToken = "dXNlcm5hbWUxMjN8MTAwMA=="; // base64 encoded: "username123|1000"
         UserEntity user = new UserEntity();
         user.setUsername("username123");
+
         when(userRepository.findByUsername("username123")).thenReturn(Optional.of(user));
 
         assertDoesNotThrow(() -> orderService.completeOrder(paymentToken));
@@ -53,6 +56,7 @@ public class OrderServiceTest {
         String paymentToken = "dXNlcm5hbWUxMjN8aW52YWxpZEZ1bmRz"; // username123|invalidFunds
         UserEntity user = new UserEntity();
         user.setUsername("username123");
+
         when(userRepository.findByUsername("username123")).thenReturn(Optional.of(user));
 
         assertThrows(OrderFailedException.class, () -> orderService.completeOrder(paymentToken));
