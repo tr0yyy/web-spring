@@ -1,11 +1,23 @@
 package com.fmi.springweb.dto;
 
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+
 public class CarDto {
+    @NotNull
     public String carModel;
+    @NotNull
     public String carBrand;
+    @NotNull
     public String country;
+    @NotNull
+    @Min(0)
     public int manufactureYear;
+    @NotNull
+    @Min(0)
     public int kilometers;
+    @NotNull
+    @Min(0)
     public float initialPrice;
 
     public CarDto() {

@@ -1,6 +1,9 @@
 package com.fmi.springweb.dto;
 
+import jakarta.validation.constraints.NotNull;
+
 public class ResponseDto<T> {
+    @NotNull
     public boolean success;
     public T result;
     public String error;
