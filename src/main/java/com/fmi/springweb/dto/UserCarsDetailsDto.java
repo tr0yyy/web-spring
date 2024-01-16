@@ -13,4 +13,14 @@ public class UserCarsDetailsDto {
     @PositiveOrZero
     public Float funds;
     public List<CarSummaryDto> cars;
+
+    @Override
+    public String toString() {
+        return "UserCarsDetailsDto{" +
+                "username='" + username + '\'' +
+                ", email='" + email + '\'' +
+                ", funds=" + funds +
+                ", cars=" + cars +
+                '}';
+    }
 }
