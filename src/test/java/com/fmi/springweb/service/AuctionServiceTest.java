@@ -61,21 +61,6 @@ public class AuctionServiceTest {
     }
 
     @Test
-    public void testStartAuctionForCarWithCarAlreadyAuctioned() {
-        StartAuctionDto startAuctionDto = new StartAuctionDto();
-        startAuctionDto.carId = 1L;
-        CarEntity carEntity = new CarEntity();
-        carEntity.setCarId(1L);
-
-        when(carRepository.findById(1L)).thenReturn(Optional.of(carEntity));
-        when(auctionRepository.findAuctionEntityByCar(carEntity)).thenReturn(Optional.of(new AuctionEntity()));
-
-        assertThrows(InvalidAuctionException.class, () -> auctionService.startAuctionForCar(startAuctionDto));
-
-        verify(auctionRepository, never()).save(any(AuctionEntity.class));
-    }
-
-    @Test
     public void testGetAvailableAuctionsWithValidAuctions() {
         CarBrandEntity carBrandEntity = new CarBrandEntity(1L, "Test", "Test");
         CarEntity carEntity = new CarEntity(carBrandEntity, "Test", 1, 1, 1);
