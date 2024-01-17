@@ -8,9 +8,7 @@ import com.fmi.springweb.exceptions.InvalidAuctionException;
 import com.fmi.springweb.service.AuctionService;
 import com.fmi.springweb.service.CarService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class AdminController {
@@ -44,6 +42,19 @@ public class AdminController {
     public ResponseEntity<ResponseDto<Object>> startAuction(@RequestBody StartAuctionDto model) {
         return RequestHandler.handleRequest(() -> {
             this.auctionService.startAuctionForCar(model);
+            return ResponseEntity.ok(new ResponseDto<>(true, null));
+        }, InvalidAuctionException.class);
+    }
+
+    /**
+     * Start car auction. Requires admin role
+     * @param id ID of auction
+     * @return 200 OK for successful import, 502 for Server Error
+     */
+    @PostMapping("/admin/auction/stop/{id}")
+    public ResponseEntity<ResponseDto<Object>> stopAuction(@PathVariable("id") Long id) {
+        return RequestHandler.handleRequest(() -> {
+            this.auctionService.stopAuction(id);
             return ResponseEntity.ok(new ResponseDto<>(true, null));
         }, InvalidAuctionException.class);
     }

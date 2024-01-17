@@ -50,7 +50,9 @@ public class AuctionService {
             throw new InvalidAuctionException("Invalid Car Id provided");
         }
 
-        if (auctionRepository.findAuctionEntityByCar(carEntity).isPresent()) {
+        AuctionEntity alreadyExistingAuction = auctionRepository.findAuctionEntityByCar(carEntity).orElse(null);
+
+        if (alreadyExistingAuction != null && !alreadyExistingAuction.getBids().isEmpty()) {
             throw new InvalidAuctionException("Car already auctioned");
         }
 
@@ -61,6 +63,18 @@ public class AuctionService {
         auctionEntity.setEndDate(new Date(new Date().getTime() + days * 24 * 60 * 60 * 1000));
         auctionEntity.setCar(carEntity);
 
+        auctionRepository.save(auctionEntity);
+    }
+
+    public void stopAuction(Long id) throws InvalidAuctionException {
+        AuctionEntity auctionEntity = auctionRepository.findAuctionEntityByAuctionId(id).orElse(null);
+        if (auctionEntity == null) {
+            throw new InvalidAuctionException("Invalid auction");
+        }
+        if (auctionEntity.getEndDate().getTime() < (new Date()).getTime()) {
+            throw new InvalidAuctionException("Auction already stopped");
+        }
+        auctionEntity.setEndDate(new Date());
         auctionRepository.save(auctionEntity);
     }
 
